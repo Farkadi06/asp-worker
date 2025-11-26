@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: asp-worker
+
+logging:
+  level:
+    root: INFO
+

@@ -1,0 +1,22 @@
+# Build outputs
+/build/
+/out/
+
+# Gradle cache
+.gradle/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local environment files
+application-local.yml
+
