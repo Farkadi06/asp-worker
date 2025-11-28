@@ -57,7 +57,7 @@ public class SqsPollingService {
                             .receiptHandle(msg.receiptHandle())
                             .build());
 
-                    log.info("[WORKER] Deleted message {}", msg.messageId());
+                    log.info("[WORKER] Deleted SQS message {}", msg.messageId());
                 } catch (Exception e) {
                     log.error("[WORKER] Error processing message {}", msg.messageId(), e);
                     // Continue processing other messages even if one fails

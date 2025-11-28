@@ -1,0 +1,40 @@
+refactor: Remove S3 download logic from worker, simplify to thin client
+
+Architectural change: Move all parsing and enrichment logic to asp-core.
+asp-worker becomes a thin client responsible only for SQS message handling.
+
+## Changes
+
+- Remove S3 download service and configuration from worker
+- Simplify IngestionQueueListener to only trigger processing in core
+- Update HttpIngestionClient to call /internal/ingestions/{id}/process
+- Remove S3 and PDFBox dependencies from build.gradle.kts
+- Update documentation to reflect new architecture
+
+## Removed
+
+- S3ClientConfig.java (deleted)
+- S3DownloadService.java (deleted)
+- All S3-related environment variables from docs
+
+## Modified
+
+- IngestionQueueListener.java: Simplified to trigger processing only
+- SqsPollingService.java: Removed S3 download references
+- HttpIngestionClient.java: Updated to call processing endpoint
+- application.yml: Removed S3-related comments
+- build.gradle.kts: Removed S3 and PDFBox dependencies
+- docs/01-project-setup.md: Updated environment variables
+
+## Architecture
+
+Worker now:
+1. Receives SQS message
+2. Fetches ingestion metadata (optional)
+3. Triggers POST /internal/ingestions/{id}/process in asp-core
+4. Deletes SQS message
+
+All PDF processing, parsing, and enrichment happens in asp-core.
+
+No breaking changes to SQS message format or worker API.
+

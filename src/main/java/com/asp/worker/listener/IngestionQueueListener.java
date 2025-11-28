@@ -4,13 +4,11 @@ import com.asp.shared.dto.IngestionMetadataDto;
 import com.asp.shared.dto.IngestionQueueMessage;
 import com.asp.worker.client.HttpIngestionClient;
 import com.asp.worker.service.IdempotencyService;
-import com.asp.worker.service.S3DownloadService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Path;
 import java.util.UUID;
 
 @Component
@@ -20,14 +18,12 @@ public class IngestionQueueListener {
     private final ObjectMapper objectMapper;
     private final IdempotencyService idempotencyService;
     private final HttpIngestionClient httpIngestionClient;
-    private final S3DownloadService s3DownloadService;
 
-    public IngestionQueueListener(ObjectMapper objectMapper, IdempotencyService idempotencyService, 
-                                  HttpIngestionClient httpIngestionClient, S3DownloadService s3DownloadService) {
+    public IngestionQueueListener(ObjectMapper objectMapper, IdempotencyService idempotencyService,
+                                  HttpIngestionClient httpIngestionClient) {
         this.objectMapper = objectMapper;
         this.idempotencyService = idempotencyService;
         this.httpIngestionClient = httpIngestionClient;
-        this.s3DownloadService = s3DownloadService;
     }
 
     public void handleMessage(String messageId, String body) {
@@ -70,33 +66,11 @@ public class IngestionQueueListener {
                 metadata.getFileSize()
             );
 
-            // Download file from S3
-            String storagePath = metadata.getStoragePath();
-            if (storagePath == null || storagePath.trim().isEmpty()) {
-                log.error("[WORKER] Cannot download file: storagePath is null or empty for ingestionId: {}", ingestionId);
-                return;
-            }
-
-            byte[] fileBytes = s3DownloadService.downloadFile(storagePath);
-            if (fileBytes == null) {
-                log.error("[WORKER] Failed to download file from S3 for ingestionId: {}, storagePath: {}", ingestionId, storagePath);
-                return;
-            }
-
-            Path localPdf = s3DownloadService.downloadToTemp(ingestionId, storagePath);
-            if (localPdf == null) {
-                log.error("[WORKER] Failed to save file to temp for ingestionId: {}, storagePath: {}", ingestionId, storagePath);
-                return;
-            }
-
-            long fileSizeKB = fileBytes.length / 1024;
-            log.info("[WORKER] Downloaded S3 file for ingestion {}: size={} KB, saved to {}", 
-                ingestionId, fileSizeKB, localPdf);
-
             // Trigger processing in asp-core
             try {
+                log.info("[WORKER] Triggering processing for ingestion {}", ingestionId);
                 httpIngestionClient.triggerProcessing(ingestionId);
-                log.info("[WORKER] Processing triggered successfully for ingestion: {}", ingestionId);
+                log.info("[WORKER] Processing triggered successfully for ingestion {}", ingestionId);
             } catch (Exception e) {
                 log.error("[WORKER] Failed to trigger processing for ingestionId: {}", ingestionId, e);
                 return;

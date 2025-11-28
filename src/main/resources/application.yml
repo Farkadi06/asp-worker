@@ -11,8 +11,6 @@ asp:
 #   ASP_CORE_BASE_URL - Base URL for asp-core API (default: http://localhost:8080)
 #   ASP_INTERNAL_ACCESS_TOKEN - Token for internal API authentication
 #   ASP_SQS_INGESTION_QUEUE_URL - SQS queue URL for ingestion messages
-#   ASP_S3_BUCKET_NAME - S3 bucket name for ingestion files (e.g., asp-prod-ingestions)
-#   AWS_REGION - AWS region for S3 (e.g., eu-west-1)
 
 logging:
   level:

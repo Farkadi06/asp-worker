@@ -25,7 +25,6 @@ dependencies {
     implementation("software.amazon.awssdk:sqs")
     implementation("software.amazon.awssdk:sts")
     implementation("software.amazon.awssdk:auth")
-    implementation("software.amazon.awssdk:s3")
 
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
