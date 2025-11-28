@@ -7,12 +7,30 @@ This document explains how to bootstrap and run the `asp-worker` service locally
 - JDK 17
 - AWS CLI (optional, for sending test messages)
 - Access to an AWS SQS queue (or a mocked endpoint) whose URL will be provided via the `ASP_SQS_INGESTION_QUEUE_URL` environment variable.
+- `asp-core` service running (for metadata fetch)
+
+## Environment Variables
+
+Required:
+- `ASP_SQS_INGESTION_QUEUE_URL` - SQS queue URL for ingestion messages
+- `ASP_INTERNAL_ACCESS_TOKEN` - Token for internal API authentication (must match `ASP_INTERNAL_ACCESS_TOKEN` in asp-core)
+- `ASP_S3_BUCKET_NAME` - S3 bucket name for ingestion files (e.g., `asp-prod-ingestions`)
+- `AWS_REGION` - AWS region for S3 (e.g., `eu-west-1`)
+
+Optional:
+- `ASP_CORE_BASE_URL` - Base URL for asp-core API (default: `http://localhost:8080`)
+
+Note: AWS credentials are loaded from the default credential provider chain (environment variables, IAM roles, etc.)
 
 ## Running Locally
 
 ```bash
 cd asp-worker
 set ASP_SQS_INGESTION_QUEUE_URL=https://sqs.us-east-1.amazonaws.com/123456789012/asp-ingestion-queue
+set ASP_CORE_BASE_URL=http://localhost:8080
+set ASP_INTERNAL_ACCESS_TOKEN=your_internal_token_here
+set ASP_S3_BUCKET_NAME=asp-prod-ingestions
+set AWS_REGION=eu-west-1
 ./gradlew bootRun
 ```
 

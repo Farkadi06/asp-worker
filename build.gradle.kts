@@ -19,12 +19,18 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
+    implementation(platform("software.amazon.awssdk:bom:2.25.14"))
     implementation("software.amazon.awssdk:sqs")
     implementation("software.amazon.awssdk:sts")
     implementation("software.amazon.awssdk:auth")
+    implementation("software.amazon.awssdk:s3")
 
     implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("jakarta.validation:jakarta.validation-api")
+    implementation(project(":asp-shared"))
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
